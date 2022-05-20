@@ -9,19 +9,31 @@ project(DeviceCommandQt
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core)
 
-add_library(DeviceCommandQt INTERFACE)
+add_library(DeviceCommandQt STATIC
+    src/DeviceCommandTypes.h
+    src/IDeviceTransport.h
+    src/IDeviceCommandCodec.h
+    src/DeviceCommandDispatcher.h
+    src/DeviceCommandDispatcher.cpp
+)
 
 add_library(DeviceCommandQt::DeviceCommandQt ALIAS DeviceCommandQt)
 
-target_compile_features(DeviceCommandQt INTERFACE cxx_std_17)
+target_compile_features(DeviceCommandQt PUBLIC cxx_std_17)
 
 target_include_directories(DeviceCommandQt
-    INTERFACE
+    PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
         $<INSTALL_INTERFACE:include/DeviceCommandQt>
 )
 
-target_link_libraries(DeviceCommandQt INTERFACE Qt6::Core)
+target_link_libraries(DeviceCommandQt PUBLIC Qt6::Core)
+
+set_target_properties(DeviceCommandQt PROPERTIES
+    OUTPUT_NAME device-command-qt
+    POSITION_INDEPENDENT_CODE ON
+)
