@@ -23,6 +23,11 @@ DeviceCommand.Qt 是一个基于 C++17、Qt 6 Core 和 CMake 的轻量级设备�
 继续处理下一条。指令会保留自己的 sequence，后续版本将补充超时、重试、取消和
 断开处理。
 
+## 示例
+
+`samples/ConsoleSample` 提供虚构帧协议、内存 Transport 和控制台程序，用于演示
+指令入队、发送和响应匹配，不对应任何真实设备协议。
+
 ## 构建要求
 
 - C++17 编译器；

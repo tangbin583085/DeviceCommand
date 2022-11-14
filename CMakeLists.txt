@@ -6,6 +6,8 @@ project(DeviceCommandQt
     LANGUAGES CXX
 )
 
+option(DEVICECOMMAND_BUILD_SAMPLE "Build the console sample" ON)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -37,3 +39,7 @@ set_target_properties(DeviceCommandQt PROPERTIES
     OUTPUT_NAME device-command-qt
     POSITION_INDEPENDENT_CODE ON
 )
+
+if(DEVICECOMMAND_BUILD_SAMPLE)
+    add_subdirectory(samples/ConsoleSample)
+endif()
