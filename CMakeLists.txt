@@ -7,6 +7,7 @@ project(DeviceCommandQt
 )
 
 option(DEVICECOMMAND_BUILD_SAMPLE "Build the console sample" ON)
+option(DEVICECOMMAND_BUILD_TESTS "Build Qt Test unit tests" ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -42,4 +43,9 @@ set_target_properties(DeviceCommandQt PROPERTIES
 
 if(DEVICECOMMAND_BUILD_SAMPLE)
     add_subdirectory(samples/ConsoleSample)
+endif()
+
+if(DEVICECOMMAND_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
 endif()

@@ -28,6 +28,9 @@ DeviceCommand.Qt 是一个基于 C++17、Qt 6 Core 和 CMake 的轻量级设备�
 `samples/ConsoleSample` 提供虚构帧协议、内存 Transport 和控制台程序，用于演示
 指令入队、发送和响应匹配，不对应任何真实设备协议。
 
+启用 `DEVICECOMMAND_BUILD_TESTS` 后可以通过 Qt Test 验证 FIFO、响应匹配、拆包、
+超时、重试、取消和断开流程。
+
 ## 构建要求
 
 - C++17 编译器；
