@@ -136,7 +136,7 @@ private:
     QTimer *timer_ = nullptr;
     TimerMode timerMode_ = TimerMode::None;
     quint16 nextSequence_ = 1;
-    int retryIntervalMilliseconds_ = 0;
+    int retryIntervalMilliseconds_ = 100;
 };
 
 }

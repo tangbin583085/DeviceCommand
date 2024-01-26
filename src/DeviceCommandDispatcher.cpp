@@ -31,11 +31,17 @@ DeviceCommandDispatcher::DeviceCommandDispatcher(
 
     if (transport_) {
         connect(transport_, &IDeviceTransport::dataReceived,
-                this, &DeviceCommandDispatcher::onDataReceived);
+                this, &DeviceCommandDispatcher::onDataReceived,
+                Qt::QueuedConnection);
         connect(transport_, &IDeviceTransport::disconnected,
-                this, &DeviceCommandDispatcher::onDisconnected);
+                this, &DeviceCommandDispatcher::onDisconnected,
+                Qt::QueuedConnection);
         connect(transport_, &IDeviceTransport::transportError,
-                this, &DeviceCommandDispatcher::onTransportError);
+                this, &DeviceCommandDispatcher::onTransportError,
+                Qt::QueuedConnection);
+        connect(transport_, &QObject::destroyed,
+                this, [this] { onDisconnected(); },
+                Qt::QueuedConnection);
     }
 }
 

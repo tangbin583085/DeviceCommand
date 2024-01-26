@@ -31,6 +31,9 @@ DeviceCommand.Qt 是一个基于 C++17、Qt 6 Core 和 CMake 的轻量级设备�
 启用 `DEVICECOMMAND_BUILD_TESTS` 后可以通过 Qt Test 验证 FIFO、响应匹配、拆包、
 超时、重试、取消和断开流程。
 
+重试之间保留短暂间隔，Transport 的接收、断开和错误信号通过事件队列交给调度器，
+避免底层通信回调直接重入当前指令流程。
+
 ## 构建要求
 
 - C++17 编译器；
