@@ -34,6 +34,12 @@ DeviceCommand.Qt 是一个基于 C++17、Qt 6 Core 和 CMake 的轻量级设备�
 重试之间保留短暂间隔，Transport 的接收、断开和错误信号通过事件队列交给调度器，
 避免底层通信回调直接重入当前指令流程。
 
+## 安装
+
+项目现在提供 CMake package 配置，可安装静态库、公共头文件和导出的
+`DeviceCommandQt::DeviceCommandQt` target，供其他 CMake 项目通过 `find_package`
+接入。
+
 ## 构建要求
 
 - C++17 编译器；

@@ -41,6 +41,48 @@ set_target_properties(DeviceCommandQt PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+    cmake/DeviceCommandQtConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/DeviceCommandQtConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/DeviceCommandQt
+)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/DeviceCommandQtConfigVersion.cmake
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(TARGETS DeviceCommandQt
+    EXPORT DeviceCommandQtTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+install(FILES
+    src/DeviceCommandTypes.h
+    src/IDeviceTransport.h
+    src/IDeviceCommandCodec.h
+    src/DeviceCommandDispatcher.h
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/DeviceCommandQt
+)
+
+install(EXPORT DeviceCommandQtTargets
+    FILE DeviceCommandQtTargets.cmake
+    NAMESPACE DeviceCommandQt::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/DeviceCommandQt
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/DeviceCommandQtConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/DeviceCommandQtConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/DeviceCommandQt
+)
+
 if(DEVICECOMMAND_BUILD_SAMPLE)
     add_subdirectory(samples/ConsoleSample)
 endif()
