@@ -1,55 +1,71 @@
 # DeviceCommand.Qt
 
-DeviceCommand.Qt 是一个基于 C++17、Qt 6 Core 和 CMake 的轻量级设备指令库。
-项目希望把设备指令的数据结构、传输接口和协议编解码职责拆分开，避免核心逻辑
-直接依赖串口、TCP、BLE 或厂商 SDK。
+这是一个用 Qt 6 写的设备指令调度库。
 
-## 初始范围
+项目主要用来处理设备指令的排队、发送和响应。底层通信可以是串口、TCP、BLE，
+也可以是厂商自己的 SDK，核心库不直接依赖这些模块。
 
-- 定义通用的指令、响应和执行结果；
-- 抽象设备传输和协议编解码接口；
-- 逐步实现串行指令调度、响应匹配、超时和重试；
-- 提供示例和自动化测试。
+目前支持：
 
-## 核心接口
+- FIFO 指令队列
+- 一次执行一条指令
+- sequence 和响应匹配
+- 超时和重试
+- 取消当前指令或清空队列
+- 设备断开和发送失败处理
 
-`IDeviceTransport` 只负责收发字节并报告连接状态，`IDeviceCommandCodec` 负责把
-指令编码成帧、从字节流拆出响应并判断响应是否匹配。具体的串口、网络或厂商 SDK
-由接入方实现，不会耦合进核心库。
+项目里带了一个简单的 Demo 协议和 Mock Transport，主要用于跑示例和测试，
+不对应真实设备协议。
 
-## 调度器
+## 编译
 
-`DeviceCommandDispatcher` 负责 FIFO 排队，一次只发送一条指令，并在收到匹配响应后
-继续处理下一条。指令会保留自己的 sequence，后续版本将补充超时、重试、取消和
-断开处理。
-
-## 示例
-
-`samples/ConsoleSample` 提供虚构帧协议、内存 Transport 和控制台程序，用于演示
-指令入队、发送和响应匹配，不对应任何真实设备协议。
-
-启用 `DEVICECOMMAND_BUILD_TESTS` 后可以通过 Qt Test 验证 FIFO、响应匹配、拆包、
-超时、重试、取消和断开流程。
-
-重试之间保留短暂间隔，Transport 的接收、断开和错误信号通过事件队列交给调度器，
-避免底层通信回调直接重入当前指令流程。
-
-## 安装
-
-项目现在提供 CMake package 配置，可安装静态库、公共头文件和导出的
-`DeviceCommandQt::DeviceCommandQt` target，供其他 CMake 项目通过 `find_package`
-接入。
-
-## 构建要求
-
-- C++17 编译器；
-- Qt 6 Core；
-- CMake 3.21 或更高版本。
+需要准备 Qt 6、CMake 3.21 以上版本和支持 C++17 的编译器。
 
 ```bash
-cmake -S . -B build
+cmake -S . -B build \
+  -DDEVICECOMMAND_BUILD_SAMPLE=ON \
+  -DDEVICECOMMAND_BUILD_TESTS=ON
+
 cmake --build build
+ctest --test-dir build --output-on-failure
 ```
+
+## 简单用法
+
+```cpp
+MockDeviceTransport transport;
+auto codec = std::make_unique<DemoCommandCodec>();
+DeviceCommandDispatcher dispatcher(&transport, std::move(codec));
+
+DeviceCommand command;
+command.commandId = 0x01;
+command.payload = QByteArray::fromHex("010203");
+command.timeout = std::chrono::milliseconds(2000);
+command.maxRetryCount = 2;
+
+dispatcher.enqueue(command);
+```
+
+接入真实设备时，需要实现两个接口：
+
+- `IDeviceTransport`：负责收发数据和报告连接状态
+- `IDeviceCommandCodec`：负责协议编码、拆包和响应匹配
+
+Dispatcher 只负责指令流程，不关心底层使用哪种通信方式。
+
+## 目录
+
+```text
+src/                    核心代码
+samples/ConsoleSample/  示例程序
+tests/                  单元测试
+docs/                   简单的设计说明
+```
+
+## 其他
+
+当前版本只处理单个设备和单个指令队列，没有实现自动重连、多设备管理和指令优先级。
+这些功能后面有需要再增加。
 
 ## License
 
